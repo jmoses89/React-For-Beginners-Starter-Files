@@ -10,6 +10,10 @@ var createBrowserHistory = require('history/lib/createBrowserHistory');
 var h = require('./helpers.js');
 var sampleFishes = require('./sample-fishes');
 
+// Firebase
+var Rebase = require('re-base');
+var base = Rebase.createClass('https://bh-react-training.firebaseio.com/');
+
 /*
   App
 */
@@ -20,6 +24,13 @@ var App = React.createClass({
       fishes: {},
       order: {},
     };
+  },
+
+  componentDidMount: function() {
+    base.syncState(this.props.params.storeId + '/fishes', {
+      context: this,
+      state: 'fishes',
+    });
   },
 
   addToOrder: function(key) {
