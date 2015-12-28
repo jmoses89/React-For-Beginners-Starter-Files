@@ -18,13 +18,15 @@ var App = React.createClass({
   getInitialState: function() {
     return {
       fishes: {},
-      order: {}
-    }
+      order: {},
+    };
   },
+
   addToOrder: function(key) {
     this.state.order[key] =  this.state.order[key] + 1 || 1;
     this.setState({order: this.state.order});
   },
+
   addFish: function(fish) {
     var timestamp = (new Date()).getTime();
 
@@ -33,14 +35,17 @@ var App = React.createClass({
     // set the state
     this.setState({ fishes: this.state.fishes });
   },
+
   loadSamples: function() {
     this.setState({
       fishes: sampleFishes,
     });
   },
+
   renderFish: function(key) {
     return <Fish addToOrder={this.addToOrder} key={key} index={key} details={this.state.fishes[key]}/>
   },
+
   render: function() {
 
     return (
@@ -51,11 +56,11 @@ var App = React.createClass({
             {Object.keys(this.state.fishes).map(this.renderFish)}
           </ul>
         </div>
-        <Order />
+        <Order fishes={this.state.fishes} order={this.state.order}/>
         <Inventory addFish={this.addFish} loadSamples={this.loadSamples}/>
       </div>
-    )
-  }
+    );
+  },
 });
 
 /*
@@ -63,9 +68,10 @@ var App = React.createClass({
 */
 
 var Fish = React.createClass({
-  onButtonCLick: function() {
+  onButtonClick: function() {
     this.props.addToOrder(this.props.index);
   },
+
   render: function() {
     var details = this.props.details;
     var isAvailable = (details.status === 'available' ? true : false);
@@ -78,10 +84,10 @@ var Fish = React.createClass({
           <span className="price">{h.formatPrice(details.price)}</span>
         </h3>
         <p>{details.desc}</p>
-        <button disabled={!isAvailable} onClick={this.onButtonCLick}>{btnText}</button>
+        <button disabled={!isAvailable} onClick={this.onButtonClick}>{btnText}</button>
       </li>
-    )
-  }
+    );
+  },
 });
 
 /*
@@ -103,11 +109,11 @@ var AddFishForm = React.createClass({
       image: this.refs.image.value
     };
 
-
     // 3. Add fish to app state
     this.props.addFish(fish);
     this.refs.fishForm.reset();
   },
+
   render: function() {
     return (
       <form className="fish-edit" ref="fishForm" onSubmit={this.createFish}>
@@ -121,8 +127,8 @@ var AddFishForm = React.createClass({
         <input type="text" ref="image" placeholder="URL to Image"></input>
         <button type="submit">Add Item</button>
       </form>
-    )
-  }
+    );
+  },
 });
 
 /*
@@ -144,8 +150,8 @@ var Header = React.createClass({
         </h1>
         <h3 className="tagline"><span>{this.props.tagline}</span></h3>
       </header>
-    )
-  }
+    );
+  },
 });
 
 /*
@@ -154,9 +160,18 @@ var Header = React.createClass({
 
 var Order = React.createClass({
   render: function() {
+    var orderIds = Object.keys(this.props.order);
+    var total = orderIds.reduce((prevTotal, key) => {
+      return prevTotal + this.props.order[key].price;
+    }, 0);
 
     return (
-      <p>Order</p>
+      <div className="order-wrap">
+        <h2 className="order-title"></h2>
+        <ul className="order-list">
+
+        </ul>
+      </div>
     )
   }
 });
@@ -173,9 +188,8 @@ var Inventory = React.createClass({
         <AddFishForm {...this.props} />
         <button onClick={this.props.loadSamples}>Load Sample Fishes</button>
       </div>
-
-    )
-  }
+    );
+  },
 });
 
 /*
@@ -184,13 +198,15 @@ var Inventory = React.createClass({
  */
 
 var StorePicker = React.createClass({
-  mixins : [History],
-  goToStore : function(e) {
+  mixins: [History],
+  goToStore: function(e) {
     e.preventDefault();
+
     // get the data from the input
     var storeId = this.refs.storeId.value;
     this.history.pushState(null, '/store/' + storeId);
   },
+
   render: function() {
     return (
       <form className="store-selector" onSubmit={this.goToStore}>
@@ -198,8 +214,8 @@ var StorePicker = React.createClass({
         <input type="text" ref="storeId" defaultValue={h.getFunName()}required/>
         <input type="Submit"/>
       </form>
-    )
-  }
+    );
+  },
 });
 
 /*
